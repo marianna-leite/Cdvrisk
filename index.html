@@ -57,6 +57,12 @@
             const bmi = parseFloat(document.getElementById('bmi').value);
             const smoking = document.getElementById('smoking').value;
 
+            // Verificar se todos os campos foram preenchidos
+            if (isNaN(age) || isNaN(bloodPressure) || isNaN(glucose) || isNaN(cholesterol) || isNaN(bmi)) {
+                document.getElementById('result').innerText = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
             // Inicialização das variáveis de risco
             let cardiovascularRisk = 0;
             let diabetesRisk = 0;
@@ -86,6 +92,7 @@
                 obesityRisk += 1;
             } else if (bmi >= 25) {
                 obesityRisk += 0.5; // Sobrepeso indica risco aumentado
+            }
 
             // Exibição dos resultados finais
             let resultText = `Risco de Saúde:
