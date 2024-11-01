@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Risco Cardiovascular</title>
+    <title>Avaliação de Riscos de Saúde</title>
     <style>
         body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
         .container { max-width: 400px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
@@ -18,16 +18,22 @@
 </head>
 <body>
     <div class="container">
-        <h2>Calculadora de Risco Cardiovascular</h2>
-        <form id="cardioForm">
+        <h2>Avaliação de Riscos de Saúde</h2>
+        <form id="healthForm">
             <label for="age">Idade</label>
             <input type="number" id="age" name="age" required>
 
             <label for="bloodPressure">Pressão Arterial (mmHg)</label>
             <input type="number" id="bloodPressure" name="bloodPressure" required>
 
-            <label for="cholesterol">Colesterol (mg/dL)</label>
+            <label for="glucose">Glicose (mg/dL)</label>
+            <input type="number" id="glucose" name="glucose" required>
+
+            <label for="cholesterol">Colesterol Total (mg/dL)</label>
             <input type="number" id="cholesterol" name="cholesterol" required>
+
+            <label for="bmi">IMC (Índice de Massa Corporal)</label>
+            <input type="number" id="bmi" name="bmi" step="0.1" required>
 
             <label for="smoking">É fumante?</label>
             <select id="smoking" name="smoking">
@@ -35,7 +41,7 @@
                 <option value="yes">Sim</option>
             </select>
 
-            <button type="button" onclick="calculateRisk()">Calcular Risco</button>
+            <button type="button" onclick="calculateRisk()">Calcular Riscos</button>
         </form>
 
         <div id="result"></div>
@@ -46,51 +52,50 @@
             // Obter valores dos campos de entrada
             const age = parseInt(document.getElementById('age').value);
             const bloodPressure = parseInt(document.getElementById('bloodPressure').value);
+            const glucose = parseInt(document.getElementById('glucose').value);
             const cholesterol = parseInt(document.getElementById('cholesterol').value);
+            const bmi = parseFloat(document.getElementById('bmi').value);
             const smoking = document.getElementById('smoking').value;
 
-            let riskScore = 0;
+            // Inicialização das variáveis de risco
+            let cardiovascularRisk = 0;
+            let diabetesRisk = 0;
+            let dyslipidemiaRisk = 0;
+            let obesityRisk = 0;
 
-            // Cálculo do risco baseado na idade
-            if (age > 60) {
-                riskScore += 20;
-            } else if (age > 45) {
-                riskScore += 10;
+            // Cálculo do risco cardiovascular
+            if (age > 60 || bloodPressure > 140 || cholesterol > 240 || smoking === 'yes') {
+                cardiovascularRisk += 1;
             }
+            cardiovascularRisk += age > 45 ? 1 : 0;
 
-            // Cálculo do risco baseado na pressão arterial
-            if (bloodPressure > 140) {
-                riskScore += 20;
-            } else if (bloodPressure > 120) {
-                riskScore += 10;
+            // Cálculo do risco de diabetes
+            if (glucose > 126 || bmi >= 30 || age > 45) {
+                diabetesRisk += 1;
             }
+            if (smoking === 'yes') diabetesRisk += 1;
 
-            // Cálculo do risco baseado no colesterol
-            if (cholesterol > 240) {
-                riskScore += 20;
-            } else if (cholesterol > 200) {
-                riskScore += 10;
+            // Cálculo do risco de dislipidemia
+            if (cholesterol > 200) {
+                dyslipidemiaRisk += 1;
             }
+            if (cholesterol > 240) dyslipidemiaRisk += 1;
 
-            // Cálculo do risco baseado no tabagismo
-            if (smoking === 'yes') {
-                riskScore += 15;
-            }
+            // Cálculo do risco de obesidade
+            if (bmi >= 30) {
+                obesityRisk += 1;
+            } else if (bmi >= 25) {
+                obesityRisk += 0.5; // Sobrepeso indica risco aumentado
 
-            // Determinação da categoria de risco
-            let riskCategory = '';
-            if (riskScore >= 50) {
-                riskCategory = 'Alto';
-            } else if (riskScore >= 30) {
-                riskCategory = 'Moderado';
-            } else {
-                riskCategory = 'Baixo';
-            }
+            // Exibição dos resultados finais
+            let resultText = `Risco de Saúde:
+                - Risco Cardiovascular: ${cardiovascularRisk > 1 ? 'Alto' : 'Baixo'}
+                - Risco de Diabetes: ${diabetesRisk > 1 ? 'Alto' : 'Baixo'}
+                - Risco de Dislipidemia: ${dyslipidemiaRisk > 1 ? 'Alto' : 'Baixo'}
+                - Risco de Obesidade: ${obesityRisk > 0.5 ? 'Alto' : 'Baixo'}`;
 
-            // Exibir o resultado
-            document.getElementById('result').innerText = `Risco Cardiovascular: ${riskCategory} (${riskScore} pontos)`;
+            document.getElementById('result').innerText = resultText;
         }
     </script>
 </body>
 </html>
-
